@@ -70,6 +70,18 @@ if (manifest.requiredHostApis !== undefined) {
   }
 }
 
+if (manifest.iconFile !== undefined && typeof manifest.iconFile !== 'string') {
+  fail('iconFileは文字列（ファイル名）である必要があります');
+}
+
+if (manifest.owner !== undefined && typeof manifest.owner !== 'string') {
+  fail('ownerは文字列（GitHubユーザー名）である必要があります');
+}
+
+if (manifest.deprecated !== undefined && typeof manifest.deprecated !== 'boolean') {
+  fail('deprecatedはbooleanである必要があります');
+}
+
 if (hasError) {
   process.exit(1);
 }

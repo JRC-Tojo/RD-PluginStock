@@ -33,6 +33,9 @@ jobs:
 
       - name: Validate each changed plugin
         if: steps.changed.outputs.count != '0'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           set -e
           while IFS= read -r dir; do
@@ -40,5 +43,7 @@ jobs:
             echo "::group::Validating $dir"
             node .github/scripts/validateManifest.mjs "$dir/plugin.json"
             node .github/scripts/validateWasmBinary.mjs "$dir"
+            node .github/scripts/validateIcon.mjs "$dir"
+            node .github/scripts/validateOwnership.mjs "$dir" "$BASE_SHA" "$PR_AUTHOR"
             echo "::endgroup::"
           done < changed_dirs.txt
