@@ -1,0 +1,44 @@
+name: Validate Plugin Submission
+
+# プラグインストア・リポジトリ用のCI設定。
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Detect changed plugin directories
+        id: changed
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- plugins/ \
+            | awk -F/ 'NF>=2 {print "plugins/"$2}' \
+            | sort -u > changed_dirs.txt
+          echo "count=$(wc -l < changed_dirs.txt)" >> "$GITHUB_OUTPUT"
+          echo "変更されたプラグインディレクトリ:"
+          cat changed_dirs.txt
+
+      - name: Validate each changed plugin
+        if: steps.changed.outputs.count != '0'
+        run: |
+          set -e
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+            echo "::group::Validating $dir"
+            node .github/scripts/validateManifest.mjs "$dir/plugin.json"
+            node .github/scripts/validateWasmBinary.mjs "$dir"
+            echo "::endgroup::"
+          done < changed_dirs.txt
