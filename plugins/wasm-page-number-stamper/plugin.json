@@ -6,6 +6,7 @@
   "runtime": "wasm",
   "mainFile": "page_number_stamper.wasm",
   "iconFile": "pngtree-vector-plug-icon-png-image_707327.jpg",
+  "owner": "JRC-Tojo",
   "requiredHostApis": [
     "ui.reportProgress",
     "plan.addAnnotation",
@@ -13,5 +14,5 @@
     "plan.setConfirmationMode",
     "doc.getAnnotationIdsByTag"
   ],
-  "owner": "JRC-Tojo"
+  "deprecated": true
 }
