@@ -5,12 +5,13 @@
   "description": "各ページにページ番号のテキストボックスを配置します（再実行時は前回分を置き換えます）",
   "runtime": "wasm",
   "mainFile": "page_number_stamper.wasm",
-  "iconFile": "pngtree-vector-plug-icon-png-image_707327.jpg",
   "requiredHostApis": [
     "ui.reportProgress",
+    "ui.log",
+    "ui.reportError",
+    "plan.setConfirmationMode",
     "plan.addAnnotation",
     "plan.removeAnnotation",
-    "plan.setConfirmationMode",
     "doc.getAnnotationIdsByTag"
   ],
   "owner": "JRC-Tojo"
