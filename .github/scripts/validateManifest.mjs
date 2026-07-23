@@ -10,6 +10,8 @@ import { readFileSync } from 'node:fs';
 
 const ALLOWED_HOST_APIS = [
   'ui.reportProgress',
+  'ui.log',
+  'ui.reportError',
   'plan.setConfirmationMode',
   'plan.addAnnotation',
   'plan.updateAnnotation',

@@ -1,0 +1,60 @@
+name: Auto-merge Plugin Submission
+
+# 「Validate Plugin Submission」ワークフローが成功した直後に、対応するPRを自動マージする。
+#
+# なぜ`validate-plugin-submission.yml`自体にマージ処理を追加しないのか:
+# このリポジトリの主な利用者はフォーク経由の外部コントリビューターであり、`pull_request`
+# イベントでトリガーされるワークフローは、GitHubの仕様によりフォークからのPRに対しては
+# 常に読み取り専用の`GITHUB_TOKEN`しか持てない（`permissions:`をどう設定してもマージ権限は
+# 得られない）。そのため、検証（validate）と、その結果を受けて権限昇格した文脈で動く
+# マージ処理を、別々のワークフローに分離する。`workflow_run`イベントは常にこのリポジトリの
+# デフォルトブランチの定義で動作し、フォークPRであっても書き込み権限を持つ`GITHUB_TOKEN`を
+# 使える（未検証のPRコードを権限昇格した文脈で直接実行するわけではなく、あくまで
+# 「検証ワークフローが成功したという事実」だけを見て動くため安全）。
+#
+# 注意: `workflow_run`イベントのpayloadが持つ`pull_requests`配列は、フォークからのPRでは
+# 常に空になる（GitHubの既知の制約）。そのため`head_sha`に紐づくPRを
+# `repos.listPullRequestsAssociatedWithCommit`で改めて検索する
+
+on:
+  workflow_run:
+    workflows: ['Validate Plugin Submission']
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  merge:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge the pull request associated with the successful validation run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: headSha,
+            });
+
+            for (const pr of pulls) {
+              if (pr.state !== 'open') continue;
+              try {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  merge_method: 'squash',
+                });
+                console.log(`Merged #${pr.number}`);
+              } catch (e) {
+                // ブランチ保護ルールで人間のレビューが必須になっている等、
+                // 自動マージできない場合はログに残すのみで失敗させない
+                // （その場合は手動でマージしてもらう必要がある）
+                console.log(`Could not auto-merge #${pr.number}: ${e.message}`);
+              }
+            }

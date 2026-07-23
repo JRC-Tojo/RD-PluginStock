@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // WASMバイナリの妥当性を簡易検証する（マジックナンバー・サイズ上限）
 //
-// runtimeが"pyodide"のプラグイン（.wasmを持たない）にはこのチェックは適用しない
+// このチェックはWASMバイナリ形式そのものだけを見るため、生成に使った言語
+// （Rust/C/AssemblyScript等）を問わない。runtimeが"pyodide"のプラグイン
+// （.wasmを持たない）にはこのチェックは適用しない
 
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
