@@ -7,6 +7,12 @@
 // （別リポジトリのため型を共有できない）
 
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+// idはRelationalDocumentsアプリが申請時に自動採番するUUID（v4）。開発者が任意の文字列を
+// 選べる設計ではないため、形式とディレクトリ名との一致をここで機械的に検証する
+const PLUGIN_ID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const ALLOWED_HOST_APIS = [
   'ui.reportProgress',
@@ -53,6 +59,17 @@ try {
 for (const field of REQUIRED_STRING_FIELDS) {
   if (typeof manifest[field] !== 'string' || manifest[field].length === 0) {
     fail(`必須フィールド "${field}" が不正です（非空の文字列が必要）`);
+  }
+}
+
+if (typeof manifest.id === 'string') {
+  if (!PLUGIN_ID_PATTERN.test(manifest.id)) {
+    fail(`idはUUID（v4）形式である必要があります（実際: ${manifest.id}）`);
+  }
+
+  const dirName = path.basename(path.dirname(manifestPath));
+  if (manifest.id !== dirName) {
+    fail(`idはディレクトリ名と一致している必要があります（id: ${manifest.id}, dir: ${dirName}）`);
   }
 }
 
