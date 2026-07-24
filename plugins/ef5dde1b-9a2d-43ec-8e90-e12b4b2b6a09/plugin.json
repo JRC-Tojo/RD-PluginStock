@@ -1,5 +1,5 @@
 {
-  "id": "wasm-page-number-stamper",
+  "id": "ef5dde1b-9a2d-43ec-8e90-e12b4b2b6a09",
   "name": "ページ番号スタンパー",
   "version": "1.0.0",
   "description": "各ページにページ番号のテキストボックスを配置します（再実行時は前回分を置き換えます）",
