@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // プラグインの申請者（PR作成者）が、そのプラグインを公開できる権限を持つかを検証する
 //
-// これがなりすまし防止の実効的な検証（RelationalDocumentsアプリ側のチェックはUXのための
+// これがなりすまし防止の実効的な検証（kumihimoアプリ側のチェックはUXのための
 // 早期フィードバックに過ぎず、ここが最終防衛線）。ルール:
 //   - 新規プラグイン（base側にplugin.jsonが存在しない）: manifest.ownerがPR作成者と一致すること
 //   - 既存プラグインの更新: base側のplugin.jsonのownerと、新しいmanifest.ownerと、

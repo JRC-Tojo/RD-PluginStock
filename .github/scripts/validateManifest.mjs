@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // plugin.json の内容を検証する（外部依存ライブラリなし。Node標準機能のみで動作する）
 //
-// 本体アプリ（RelationalDocuments）側の src/models/plugin/manifest.ts が定義する
+// 本体アプリ（kumihimo）側の src/models/plugin/manifest.ts が定義する
 // PluginHostApiName と、下記 ALLOWED_HOST_APIS は手動で同期している。
 // 本体アプリ側でホストAPIを追加・変更した場合は、このリストも合わせて更新すること
 // （別リポジトリのため型を共有できない）
@@ -9,7 +9,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-// idはRelationalDocumentsアプリが申請時に自動採番するUUID（v4）。開発者が任意の文字列を
+// idはkumihimoアプリが申請時に自動採番するUUID（v4）。開発者が任意の文字列を
 // 選べる設計ではないため、形式とディレクトリ名との一致をここで機械的に検証する
 const PLUGIN_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
